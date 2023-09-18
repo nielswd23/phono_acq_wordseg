@@ -1,18 +1,33 @@
-from prep_txt_wordseg import conv_str
+import os
 
-with open(r"./PearlCorpus_test/segmented.puddle.txt") as file:
-    seg_utt = file.readlines()
+# mkdir for output files
+os.mkdir("./formatted_Pearl_seg_files/")
 
-rev_seg_utt = [utt[:-1] for utt in seg_utt] # remove newline character
+# Folder Path
+path = "./Pearl_segmented_files/"
+  
+# Change the directory
+os.chdir(path)
 
-l_words = [" ".join(list(word)) for utt in rev_seg_utt 
-           for word in utt.split(" ")]
+# main function
+def format_seg_file(file_name):
+    out_file = "../formatted_Pearl_seg_files/"+file_name
+    with open(file_name, 'r') as file:
+        seg_utt = file.readlines()
 
-# return to special char format
-conv_dict = {"A":"^", "K": "@"}
+    rev_seg_utt = [utt[:-1] for utt in seg_utt] # remove newline character
 
-final_form = [conv_str(word, conv_dict) for word in l_words]
+    l_words = [" ".join(list(word)) for utt in rev_seg_utt 
+            for word in utt.split(" ")]
+    
+    # removing empty words. baseline had some strange spacing and produced empty words
+    if '' in l_words:
+        l_words = [word for word in l_words if word != '']
+    
+    with open(out_file, "w") as f: 
+        for item in l_words:
+            f.write("%s\n" % item)
 
-# with open("formatted_seg_puddle.txt", "w") as f: 
-#     for item in final_form:
-#         f.write("%s\n" % item)
+# iterate through files
+for f in os.listdir():
+    format_seg_file(f)
