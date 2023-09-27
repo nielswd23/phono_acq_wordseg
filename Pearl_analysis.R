@@ -74,6 +74,11 @@ hists(rev_puddle, "uni_prob")
 hists(rev_ag, "uni_prob")
 
 
+filter(full_df, Contrast == 'Bigram') %>%
+  ggplot(data = ., aes(x=bi_prob_smoothed, fill=List)) +
+  geom_histogram(alpha = 0.4, position = 'identity') +
+  facet_wrap(~model)
+
 filter(full_df, Contrast == 'Unigram') %>%
   ggplot(data = ., aes(x=bi_prob_smoothed, fill=List)) +
   geom_histogram(alpha = 0.4, position = 'identity') +
@@ -82,56 +87,101 @@ filter(full_df, Contrast == 'Unigram') %>%
 
 ### analyses 
 ## bi_prob_smoothed
-full_df %>%
-  filter(model == 'puddle' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
+ttest <- function(model_str, contrast_str) {
+  test <- full_df %>%
+    filter(model == model_str & Contrast == contrast_str) %>%
+    t.test(bi_prob_smoothed ~ List, data = .)
+  return(test)
+}
 
-full_df %>%
-  filter(model == 'ag' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
+# Bigram
+ttest('puddle', 'Bigram')
+ttest('ag', 'Bigram')
+ttest('tp', 'Bigram')
+ttest('baseline', 'Bigram')
+ttest('dibs', 'Bigram')
+ttest('dpseg', 'Bigram')
 
-full_df %>%
-  filter(model == 'tp' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
-
-full_df %>%
-  filter(model == 'baseline' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
-
-full_df %>%
-  filter(model == 'dibs' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
-
-full_df %>%
-  filter(model == 'dpseg' & Contrast == 'Bigram') %>%
-  t.test(bi_prob_smoothed ~ List, data = .)
-
-## uni_prob-- DUH all the same
-full_df %>%
-  filter(model == 'puddle' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
-
-full_df %>%
-  filter(model == 'ag' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
-
-full_df %>%
-  filter(model == 'tp' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
-
-full_df %>%
-  filter(model == 'baseline' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
-
-full_df %>%
-  filter(model == 'dibs' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
-
-full_df %>%
-  filter(model == 'dpseg' & Contrast == 'Bigram') %>%
-  t.test(uni_prob ~ List, data = .)
+# Unigram 
+ttest('puddle', 'Unigram')
+ttest('ag', 'Unigram')
+ttest('tp', 'Unigram')
+ttest('baseline', 'Unigram')
+ttest('dibs', 'Unigram')
+ttest('dpseg', 'Unigram')
 
 
 
+
+
+### running analyses on experiment 3 stimuli 
+filter_exp3 <- function(df) {
+  new_df <- df %>%
+    slice(265:396)
+  return(new_df)
+}
+
+exp3_ag = filter_exp3(rev_ag)
+exp3_baseline = filter_exp3(rev_baseline)
+exp3_dibs = filter_exp3(rev_dibs)
+exp3_dpseg = filter_exp3(rev_dpseg)
+exp3_puddle = filter_exp3(rev_puddle)
+exp3_tp = filter_exp3(rev_tp)
+
+exp3_comb_df <- list(exp3_ag, exp3_baseline, exp3_dibs, exp3_dpseg, exp3_puddle, exp3_tp) %>%
+  reduce(full_join)
+
+exp3_full_df <- rev_infant_df %>%
+  slice(265:396) %>% 
+  inner_join(exp3_comb_df, .) %>%
+  mutate(bin_list = case_when(List == 'High' ~ 1, List == 'Low' ~ 0))
+
+## plot with bi_prob_smoothed
+# hist
+filter(exp3_full_df, model != 'dpseg') %>%
+  ggplot(aes(x=bi_prob_smoothed, fill=List)) +
+  geom_histogram(alpha = 0.4, position = 'identity') +
+  facet_wrap(~model)
+# density
+filter(exp3_full_df, model != 'dpseg') %>%
+  ggplot(aes(x=bi_prob_smoothed, fill=List)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~model)
+
+
+## t tests
+ttest_funct_exp3 <- function(model_str) {
+  test = exp3_full_df %>%
+    filter(model == model_str) %>%
+    t.test(bi_prob_smoothed ~ List, data = .)
+  return(test)
+}
+
+ttest_funct_exp3('puddle')
+ttest_funct_exp3('ag')
+ttest_funct_exp3('baseline')
+ttest_funct_exp3('tp')
+ttest_funct_exp3('dibs')
+ttest_funct_exp3('dpseg')
+
+
+## logistic regression 
+log_reg_funct <- function(model_str) {
+  mod <- exp3_full_df %>%
+    filter(model == model_str) %>%
+    glm(bin_list ~ bi_prob_smoothed, data = .,
+        family = "binomial")
+  return(mod)
+}
+
+log_reg_puddle = log_reg_funct('puddle')
+log_reg_ag = log_reg_funct('ag')
+log_reg_tp = log_reg_funct('tp')
+log_reg_baseline = log_reg_funct('baseline')
+log_reg_dpseg = log_reg_funct('dpseg')
+log_reg_dibs = log_reg_funct('dibs')
+
+
+summary(log_reg_tp)
 
 
