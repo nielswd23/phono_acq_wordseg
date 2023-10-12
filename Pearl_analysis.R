@@ -39,8 +39,11 @@ rev_dibs = rem_spaces(dibs, "dibs")
 rev_dpseg = rem_spaces(dpseg, "dpseg")
 rev_puddle = rem_spaces(puddle, "puddle")
 rev_tp = rem_spaces(tp, "tp")
+rev_unseg = rem_spaces(unseg, "unseg")
+rev_gold = rem_spaces(gold_seg, "gold")
 
-comb_df <- list(rev_ag, rev_baseline, rev_dibs, rev_dpseg, rev_puddle, rev_tp) %>%
+comb_df <- list(rev_ag, rev_baseline, rev_dibs, rev_dpseg, rev_puddle, rev_tp,
+                rev_unseg, rev_gold) %>%
   reduce(full_join)
 
 # format infant stimuli
@@ -101,6 +104,8 @@ ttest('tp', 'Bigram')
 ttest('baseline', 'Bigram')
 ttest('dibs', 'Bigram')
 ttest('dpseg', 'Bigram')
+ttest('unseg', 'Bigram')
+ttest('gold', 'Bigram')
 
 # Unigram 
 ttest('puddle', 'Unigram')
@@ -109,6 +114,8 @@ ttest('tp', 'Unigram')
 ttest('baseline', 'Unigram')
 ttest('dibs', 'Unigram')
 ttest('dpseg', 'Unigram')
+ttest('unseg', 'Unigram')
+ttest('gold', 'Unigram')
 
 
 
@@ -127,14 +134,22 @@ exp3_dibs = filter_exp3(rev_dibs)
 exp3_dpseg = filter_exp3(rev_dpseg)
 exp3_puddle = filter_exp3(rev_puddle)
 exp3_tp = filter_exp3(rev_tp)
+exp3_unseg = filter_exp3(rev_unseg)
+exp3_gold = filter_exp3(rev_gold)
 
-exp3_comb_df <- list(exp3_ag, exp3_baseline, exp3_dibs, exp3_dpseg, exp3_puddle, exp3_tp) %>%
+exp3_comb_df <- list(exp3_ag, exp3_baseline, exp3_dibs, exp3_dpseg, 
+                     exp3_puddle, exp3_tp, exp3_unseg, exp3_gold) %>%
   reduce(full_join)
 
 exp3_full_df <- rev_infant_df %>%
   slice(265:396) %>% 
   inner_join(exp3_comb_df, .) %>%
-  mutate(bin_list = case_when(List == 'High' ~ 1, List == 'Low' ~ 0))
+  # mutate(bin_list = case_when(List == 'High' ~ 1, List == 'Low' ~ 0)) %>% # take this out
+  mutate(List = as.factor(List), 
+         scaled_bi_prob_smoothed = scale(bi_prob_smoothed),
+         scaled_uni_prob = scale(uni_prob))
+# add scaled uni_prob
+
 
 ## plot with bi_prob_smoothed
 # hist
@@ -143,11 +158,14 @@ filter(exp3_full_df, model != 'dpseg') %>%
   geom_histogram(alpha = 0.4, position = 'identity') +
   facet_wrap(~model)
 # density
-filter(exp3_full_df, model != 'dpseg') %>%
+p_density <- filter(exp3_full_df, model != 'dpseg') %>%
   ggplot(aes(x=bi_prob_smoothed, fill=List)) +
   geom_density(alpha = 0.6) +
   facet_wrap(~model)
 
+# pdf("~/Desktop/summer23_seg_proj/phono_acq_wordseg/plots/Pearl_density.pdf")
+# p_density
+# dev.off()
 
 ## t tests
 ttest_funct_exp3 <- function(model_str) {
@@ -162,17 +180,19 @@ ttest_funct_exp3('ag')
 ttest_funct_exp3('baseline')
 ttest_funct_exp3('tp')
 ttest_funct_exp3('dibs')
-ttest_funct_exp3('dpseg')
+ttest_funct_exp3('unseg')
+
 
 
 ## logistic regression 
 log_reg_funct <- function(model_str) {
   mod <- exp3_full_df %>%
     filter(model == model_str) %>%
-    glm(bin_list ~ bi_prob_smoothed, data = .,
+    glm(List ~ scaled_bi_prob_smoothed, data = .,
         family = "binomial")
   return(mod)
 }
+
 
 log_reg_puddle = log_reg_funct('puddle')
 log_reg_ag = log_reg_funct('ag')
@@ -180,8 +200,32 @@ log_reg_tp = log_reg_funct('tp')
 log_reg_baseline = log_reg_funct('baseline')
 log_reg_dpseg = log_reg_funct('dpseg')
 log_reg_dibs = log_reg_funct('dibs')
+log_reg_unseg = log_reg_funct('unseg')
+log_reg_gold = log_reg_funct('gold')
 
 
 summary(log_reg_tp)
+summary(log_reg_puddle)
+summary(log_reg_ag)
+summary(log_reg_baseline)
+summary(log_reg_dibs)
+summary(log_reg_unseg)
+summary(log_reg_gold)
 
+
+
+
+
+
+
+## checking some strange labeling in original data. ycg listed as both low and high 
+rev_infant_df %>%
+  select(word, Contrast, List) %>%
+  filter(Contrast == 'Unigram') %>%
+  group_by(word) %>%
+  count() %>%
+  filter(n>1) 
+
+rev_infant_df %>%
+  filter(word == 'CiD')
 
