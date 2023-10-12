@@ -16,7 +16,7 @@ kfold <- function(df,rand_seed) {
   
   # Specify logistic regression model to be estimated using training data
   # and k-fold cross-validation process
-  model1 <- train(List ~ scaled_uni_prob * scaled_bi_prob_smoothed, data=df_tp, 
+  model1 <<- train(List ~ scaled_uni_prob * scaled_bi_prob_smoothed, data=df, 
                   method="glm", 
                   family="binomial", 
                   trControl=ctrlspecs)
@@ -41,20 +41,22 @@ df_dibs = filter(exp3_full_df, model == 'dibs')
 df_ag = filter(exp3_full_df, model == 'ag')
 df_puddle = filter(exp3_full_df, model == 'puddle')
 df_baseline = filter(exp3_full_df, model == 'baseline')
+df_gold = filter(exp3_full_df, model == 'gold')
 
 
 # accuracy scores
 acc_tp = kfold(df_tp, 49) 
-acc_dibs = kfold(df_dibs, 824)
-acc_ag = kfold(df_ag, 12)
-acc_puddle = kfold(df_puddle, 40)
-acc_baseline = kfold(df_baseline, 54)
-acc_unseg = kfold(df_unseg, 33)
+acc_dibs = kfold(df_dibs, 49)
+acc_ag = kfold(df_ag, 49)
+acc_puddle = kfold(df_puddle, 49)
+acc_baseline = kfold(df_baseline, 49)
+acc_unseg = kfold(df_unseg, 49)
+acc_gold = kfold(df_gold, 49)
 
 
 ## Baseline
 # Set random seed for subsequent random selection and assignment operations
-set.seed(198)
+set.seed(49)
 
 base_mod <- df_dibs %>%
   mutate(baseline = 1) %>%
@@ -73,6 +75,18 @@ preds_base <- base_mod$pred %>%
 # I couldn't find a way to implement a baseline model with the train function 
 # so I went with a dummy variable
 
+# # Not sure nullModel is what we want but seems like a sensible baseline
+# null = nullModel(y = df_dibs$List)
+# 
+# predict(null)
+# 
+# # this syntax (either 1 or .) was running into errors
+# train(List ~ ., data=df_dibs, 
+#       method="glm", 
+#       family="binomial", 
+#       trControl=ctrlspecs)
+
+
 
 
 
@@ -85,7 +99,7 @@ format_acc <- function(df, model_str) {
 comb_acc <- list(format_acc(acc_tp, 'tp'), format_acc(acc_dibs, 'dibs'), 
                  format_acc(acc_ag, 'ag'), format_acc(acc_puddle, 'puddle'),
                  format_acc(acc_baseline, 'baseline'), 
-                 format_acc(acc_unseg, 'unseg'), 
+                 format_acc(acc_unseg, 'unseg'), format_acc(acc_gold, 'gold'), 
                  format_acc(preds_base, 'no pred')) %>%
   reduce(full_join)
 
