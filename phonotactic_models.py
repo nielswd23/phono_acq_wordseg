@@ -15,5 +15,9 @@ for l in path_training_out_files:
     ngram_calculator.run(l[0], path_test, l[1])
 # run(path to training, path to test, path to out)
 
-# ngram_calculator.run(path_training_out_files[1][0], 
-#                      path_test, path_training_out_files[1][1])
+# # additional run on unsegmented Pearl corpus and gold seg
+ngram_calculator.run("./Formatted_Pearl_seg_files/unseg.txt", path_test, 
+                     dir_o + "unseg.txt")
+
+ngram_calculator.run("./Formatted_Pearl_seg_files/gold_seg.txt", path_test, 
+                     dir_o + "gold_seg.txt")
