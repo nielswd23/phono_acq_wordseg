@@ -9,18 +9,31 @@ from prep_txt_wordseg import *
 unseg_output = [" ".join([char for char in utt if char != " "]) 
         for utt in conv_pearl_utts]
 
+unseg_types = list(set(unseg_output))
+
 
 # # writing the revised corpus to a txt file 
 # with open("./formatted_Pearl_seg_files/unseg.txt", "w") as f: 
 #     for item in unseg_output:
 #         f.write("%s\n" % item)
 
+# with open("./formatted_Pearl_seg_files_types/unseg.txt", "w") as f: 
+#     for item in unseg_types:
+#         f.write("%s\n" % item)
 
-## gold standard 
+
+
+### gold standard 
 gold_output = [" ".join(list(word)) for utt in conv_pearl_utts 
                for word in utt.split()]
+
+gold_types = list(set(gold_output))
 
 # # writing the revised corpus to a txt file 
 # with open("./formatted_Pearl_seg_files/gold_seg.txt", "w") as f: 
 #     for item in gold_output:
+#         f.write("%s\n" % item)
+
+# with open("./formatted_Pearl_seg_files_types/gold_seg.txt", "w") as f: 
+#     for item in gold_types:
 #         f.write("%s\n" % item)
