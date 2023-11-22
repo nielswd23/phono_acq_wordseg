@@ -111,7 +111,7 @@ kfold_pos <- function(df,rand_seed) {
   
   # Print information about model
   print(model1)
-  summary(model1)
+  print(summary(model1))
   
   # predictions
   preds_df <- model1$pred %>%
@@ -192,36 +192,16 @@ df2b_gold = create_df(gold_seg, "gold", rev_infant_2b, 133:264)
 # write.csv(df2a_unseg, "../dfs_for_Canaan/Unseg_2a.csv", row.names = FALSE)
 # write.csv(df2b_unseg, "../dfs_for_Canaan/Unseg_2b.csv", row.names = FALSE)
 
-### load output files for NewBigram list
-setwd("~/Desktop/summer23_seg_proj/phono_acq_wordseg/New_Pearl_ngram_out_types/") # this is the analysis on word types with the NewBigram stimuli list
-
-temp = list.files(pattern="*.txt")
-for (i in 1:length(temp)) assign(str_split_fixed(temp[i], "\\.", 2)[,1], # lopping off the .txt
-                                 read.table(temp[i], sep = ",", header = TRUE)) 
-
-# stimuli for the NewBigram List
-NewBi_stim <- read.csv("../NewBigramLists.csv") %>%
-  mutate(word = gsub("@", "A", Klattbet))
-
-# format df
-df_ag_New = create_df(ag, "ag", NewBi_stim, 1:132)
-df_baseline_New = create_df(baseline, "baseline", NewBi_stim, 1:132)
-df_dibs_New = create_df(dibs, "dibs", NewBi_stim, 1:132)
-df_puddle_New = create_df(puddle, "puddle", NewBi_stim, 1:132)
-df_tp_New = create_df(tp, "tp", NewBi_stim, 1:132)
-df_unseg_New = create_df(unseg, "unseg", NewBi_stim, 1:132)
-df_gold_New = create_df(gold_seg, "gold", NewBi_stim, 1:132)
-
 
 ### Probability score results
 # 2a accuracy scores
-acc_tp_2a = kfold(df2a_tp, 907) 
-acc_dibs_2a = kfold(df2a_dibs, 907)
-acc_ag_2a = kfold(df2a_ag, 907)
-acc_puddle_2a = kfold(df2a_puddle, 907)
-acc_baseline_2a = kfold(df2a_baseline, 907)
-acc_unseg_2a = kfold(df2a_unseg, 907)
-acc_gold_2a = kfold(df2a_gold, 907)
+acc_tp_2a = kfold(df2a_tp, 905) 
+acc_dibs_2a = kfold(df2a_dibs, 905)
+acc_ag_2a = kfold(df2a_ag, 905)
+acc_puddle_2a = kfold(df2a_puddle, 905)
+acc_baseline_2a = kfold(df2a_baseline, 905)
+acc_unseg_2a = kfold(df2a_unseg, 905)
+acc_gold_2a = kfold(df2a_gold, 905)
 # baseline 
 baseline_2a = baseline_model(model1)
 
@@ -240,13 +220,13 @@ comb_acc_2a <- list(format_acc(acc_tp_2a, 'tp'), format_acc(acc_dibs_2a, 'dibs')
                                   'wordseg models'))
 
 # 2b accuracy scores
-acc_tp_2b = kfold(df2b_tp, 907) 
-acc_dibs_2b = kfold(df2b_dibs, 907)
-acc_ag_2b = kfold(df2b_ag, 907)
-acc_puddle_2b = kfold(df2b_puddle, 907)
-acc_baseline_2b = kfold(df2b_baseline, 907)
-acc_unseg_2b = kfold(df2b_unseg, 907)
-acc_gold_2b = kfold(df2b_gold, 907)
+acc_tp_2b = kfold(df2b_tp, 905) 
+acc_dibs_2b = kfold(df2b_dibs, 905)
+acc_ag_2b = kfold(df2b_ag, 905)
+acc_puddle_2b = kfold(df2b_puddle, 905)
+acc_baseline_2b = kfold(df2b_baseline, 905)
+acc_unseg_2b = kfold(df2b_unseg, 905)
+acc_gold_2b = kfold(df2b_gold, 905)
 # baseline 
 baseline_2b = baseline_model(model1)
 
@@ -263,40 +243,16 @@ comb_acc_2b <- list(format_acc(acc_tp_2b, 'tp'), format_acc(acc_dibs_2b, 'dibs')
                                                'unseg'), 'base text', 
                                   'wordseg models'))
 
-# NewBigram accuracy scores
-acc_tp_New = kfold(df_tp_New, 907) 
-acc_dibs_New = kfold(df_dibs_New, 907)
-acc_ag_New = kfold(df_ag_New, 907)
-acc_puddle_New = kfold(df_puddle_New, 907)
-acc_baseline_New = kfold(df_baseline_New, 907)
-acc_unseg_New = kfold(df_unseg_New, 907)
-acc_gold_New = kfold(df_gold_New, 907)
-# baseline
-baseline_New = baseline_model(model1)
-
-comb_acc_New <- list(format_acc(acc_tp_New, 'tp'), format_acc(acc_dibs_New, 'dibs'), 
-                 format_acc(acc_ag_New, 'ag'), format_acc(acc_puddle_New, 'puddle'),
-                 format_acc(acc_baseline_New, 'random seg'), # renaming some of the models for clearer labels in the plots
-                 format_acc(acc_unseg_New, 'unseg'), 
-                 format_acc(acc_gold_New, 'gold seg')) %>%
-  reduce(full_join) %>%
-  dplyr::mutate(model = fct_relevel(model, "gold seg", 
-                                    "unseg", "random seg", 
-                                    "ag", "dibs", "puddle", "tp"),
-                category = ifelse(model %in% c('gold seg', 
-                                               'unseg'), 
-                                  'base text', 
-                                  'wordseg models'))
 
 ## positional score data
 # 2a accuracy scores
-acc_tp_2a_pos = kfold_pos(df2a_tp, 907) 
-acc_dibs_2a_pos = kfold_pos(df2a_dibs, 907)
-acc_ag_2a_pos = kfold_pos(df2a_ag, 907)
-acc_puddle_2a_pos = kfold_pos(df2a_puddle, 907)
-acc_baseline_2a_pos = kfold_pos(df2a_baseline, 907)
-acc_unseg_2a_pos = kfold_pos(df2a_unseg, 907)
-acc_gold_2a_pos = kfold_pos(df2a_gold, 907)
+acc_tp_2a_pos = kfold_pos(df2a_tp, 905) 
+acc_dibs_2a_pos = kfold_pos(df2a_dibs, 905)
+acc_ag_2a_pos = kfold_pos(df2a_ag, 905)
+acc_puddle_2a_pos = kfold_pos(df2a_puddle, 905)
+acc_baseline_2a_pos = kfold_pos(df2a_baseline, 905)
+acc_unseg_2a_pos = kfold_pos(df2a_unseg, 905)
+acc_gold_2a_pos = kfold_pos(df2a_gold, 905)
 # baseline
 baseline_2a_pos = baseline_model(model1)
 
@@ -314,13 +270,13 @@ comb_acc_2a_pos <- list(format_acc(acc_tp_2a_pos, 'tp'), format_acc(acc_dibs_2a_
                                   'wordseg models'))
 
 # 2b accuracy scores
-acc_tp_2b_pos = kfold_pos(df2b_tp, 907) 
-acc_dibs_2b_pos = kfold_pos(df2b_dibs, 907)
-acc_ag_2b_pos = kfold_pos(df2b_ag, 907)
-acc_puddle_2b_pos = kfold_pos(df2b_puddle, 907)
-acc_baseline_2b_pos = kfold_pos(df2b_baseline, 907)
-acc_unseg_2b_pos = kfold_pos(df2b_unseg, 907)
-acc_gold_2b_pos = kfold_pos(df2b_gold, 907)
+acc_tp_2b_pos = kfold_pos(df2b_tp, 905) 
+acc_dibs_2b_pos = kfold_pos(df2b_dibs, 905)
+acc_ag_2b_pos = kfold_pos(df2b_ag, 905)
+acc_puddle_2b_pos = kfold_pos(df2b_puddle, 905)
+acc_baseline_2b_pos = kfold_pos(df2b_baseline, 905)
+acc_unseg_2b_pos = kfold_pos(df2b_unseg, 905)
+acc_gold_2b_pos = kfold_pos(df2b_gold, 905)
 # baseline
 baseline_2b_pos = baseline_model(model1)
 
@@ -337,40 +293,14 @@ comb_acc_2b_pos <- list(format_acc(acc_tp_2b_pos, 'tp'), format_acc(acc_dibs_2b_
                                                'unseg'), 'base text', 
                                   'wordseg models'))
 
-# NewBigram accuracy scores
-acc_tp_New_pos = kfold_pos(df_tp_New, 907) 
-acc_dibs_New_pos = kfold_pos(df_dibs_New, 907)
-acc_ag_New_pos = kfold_pos(df_ag_New, 907)
-acc_puddle_New_pos = kfold_pos(df_puddle_New, 907)
-acc_baseline_New_pos = kfold_pos(df_baseline_New, 907)
-acc_unseg_New_pos = kfold_pos(df_unseg_New, 907)
-acc_gold_New_pos = kfold_pos(df_gold_New, 907)
-# baseline
-baseline_New_pos = baseline_model(model1)
-
-comb_acc_New_pos <- list(format_acc(acc_tp_New_pos, 'tp'), format_acc(acc_dibs_New_pos, 'dibs'), 
-                     format_acc(acc_ag_New_pos, 'ag'), format_acc(acc_puddle_New_pos, 'puddle'),
-                     format_acc(acc_baseline_New_pos, 'random seg'), # renaming some of the models for clearer labels in the plots
-                     format_acc(acc_unseg_New_pos, 'unseg'), 
-                     format_acc(acc_gold_New_pos, 'gold seg')) %>%
-  reduce(full_join) %>%
-  dplyr::mutate(model = fct_relevel(model, "gold seg", 
-                                    "unseg", "random seg", 
-                                    "ag", "dibs", "puddle", "tp"),
-                category = ifelse(model %in% c('gold seg', 
-                                               'unseg'), 
-                                  'base text', 
-                                  'wordseg models'))
 
 ### plots
 # first running baseline 
 generate_plot(comb_acc_2a, baseline_2a, "Stimuli 2a Probability Scores")
 generate_plot(comb_acc_2b, baseline_2b, "Stimuli 2b Probability Scores")
-generate_plot(comb_acc_New, baseline_New, "NewBigram Probability Scores")
 generate_plot(comb_acc_2a_pos, baseline_2a_pos, "Stimuli 2a Positional Scores")
 generate_plot(comb_acc_2b_pos, baseline_2b_pos, "Stimuli 2b Positional Scores")
-generate_plot(comb_acc_New_pos, baseline_New_pos, "NewBigram Positional Scores")
-# # pdf("../accuracy_seed907.pdf")
+# # pdf("../accuracy_seed905.pdf")
 # p_2a
 # p_2a_pos
 # p_2b
@@ -378,45 +308,129 @@ generate_plot(comb_acc_New_pos, baseline_New_pos, "NewBigram Positional Scores")
 # # dev.off()
 
 
-### combining the plots
-df <- list(dplyr::mutate(comb_acc_2a, type = '2a Probability Scores'),
-           dplyr::mutate(comb_acc_2a_pos, type = '2a Positional Scores'),
-           dplyr::mutate(comb_acc_2b, type = '2b Probability Scores'),
-           dplyr::mutate(comb_acc_2b_pos, type = '2b Positional Scores')) %>%
-  reduce(full_join) %>%
-  dplyr::mutate(type = fct_relevel(type, '2a Probability Scores', '2a Positional Scores', 
-                                   '2b Probability Scores', '2b Positional Scores'))
-
-p_facet <- ggplot(data = df, aes(x = model, y = accuracy)) + 
-  # geom_hline(yintercept = mean(v_min), linetype="dashed") +
-  # geom_hline(yintercept = mean(v_max), linetype="dashed") +
-  geom_point(alpha = 0.5) +
-  stat_summary(fun.data = mean_ci, geom = "errorbar", linewidth = 1, # mean_ci is calculating a 95% confidence interval. but mean_ci(acc_ag$accuracy) is not 2 sd's away from the mean. maybe it removes outliers? 
-               width = 0.5, aes(color = category)) +
-  geom_point(stat = "summary", fun = "mean", size = 4, shape = 'square') +
-  ylim(0,1) +
-  # ggtitle("Stimuli 2b Positional Scores") +
-  # scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-  theme_bw() +
-  facet_wrap(~type, ncol = 2) + 
-  theme(legend.position = 'bottom', 
-        axis.text=element_text(size=13),
-        axis.title = element_text(size=18),
-        strip.text = element_text(size = 18),
-        legend.text = element_text(size = 15),
-        legend.title = element_text(size = 17))
-# theme(plot.title = element_text(hjust = 0.5))
-
-# ggsave("../accuracy_facet.pdf", plot = p_facet, width = 12, height = 8)
 
 
+### replicating Breiss analysis 
+# load in data 
+df_gold_breiss <- read.csv("../Breiss_analysis/PearlWordTypes_scored.csv") %>%
+  dplyr::mutate(scaled_bi_prob_smoothed = scale(bi_prob_smoothed),
+                scaled_uni_prob = scale(uni_prob),
+                scaled_pos_uni_score_smoothed = scale(pos_uni_score_smoothed),
+                scaled_pos_bi_score_smoothed = scale(pos_bi_score_smoothed)) %>%
+  distinct()
+df_unseg_breiss <- read.csv("../Breiss_analysis/PearlUtteranceTypes_scored.csv") %>%
+  dplyr::mutate(scaled_bi_prob_smoothed = scale(bi_prob_smoothed),
+                scaled_uni_prob = scale(uni_prob),
+                scaled_pos_uni_score_smoothed = scale(pos_uni_score_smoothed),
+                scaled_pos_bi_score_smoothed = scale(pos_bi_score_smoothed)) %>%
+  distinct()
+
+# # seems to be a few duplicates? --- RESOLVED with distinct()
+# df_gold_breiss[30,] == df_gold_breiss[29,]
+
+## 2b (new Bigram contrast)
+df_gold_breiss_2b = df_gold_breiss %>%
+  filter(Contrast == 'NewBigram')
+df_unseg_breiss_2b = df_unseg_breiss %>%
+  filter(Contrast == 'NewBigram')
+
+# kfold analysis
+acc_gold_2b_breiss = kfold(df_gold_breiss_2b, 905)
+acc_unseg_2b_breiss = kfold(df_unseg_breiss_2b, 905)
+acc_gold_2b_breiss_pos = kfold_pos(df_gold_breiss_2b, 905)
+acc_unseg_2b_breiss_pos = kfold_pos(df_unseg_breiss_2b, 905)
+
+## 2a (Unigram contrast)
+df_gold_breiss_2a = df_gold_breiss %>%
+  filter(Contrast == 'Unigram')
+df_unseg_breiss_2a = df_unseg_breiss %>%
+  filter(Contrast == 'Unigram')
+
+# kfold analysis
+acc_gold_2a_breiss = kfold(df_gold_breiss_2a, 905)
+acc_unseg_2a_breiss = kfold(df_unseg_breiss_2a, 905)
+acc_gold_2a_breiss_pos = kfold_pos(df_gold_breiss_2a, 905)
+acc_unseg_2a_breiss_pos = kfold_pos(df_unseg_breiss_2a, 905)
 
 
+format_breiss <- function(df, model_str, StimuliSet_str, score_type_str) {
+  new_df <- df %>%
+    dplyr::mutate(model = model_str, stim = StimuliSet_str, 
+                  score_type = score_type_str)
+  return(new_df)
+}
+
+comb_acc_breiss <- list(format_breiss(acc_gold_2a_breiss, 'gold', '2a', 'probability'),
+                        format_breiss(acc_unseg_2a_breiss, 'unseg', '2a', 'probability'),
+                        format_breiss(acc_gold_2a_breiss_pos, 'gold', '2a', 'positional'),
+                        format_breiss(acc_unseg_2a_breiss_pos, 'unseg', '2a', 'positional'),
+                        format_breiss(acc_gold_2b_breiss, 'gold', '2b', 'probability'),
+                        format_breiss(acc_unseg_2b_breiss, 'unseg', '2b', 'probability'),
+                        format_breiss(acc_gold_2b_breiss_pos, 'gold', '2b', 'positional'),
+                        format_breiss(acc_unseg_2b_breiss_pos, 'unseg', '2b', 'positional')) %>%
+  reduce(full_join)
+
+# plot with x axis model (gold vs unseg) y axis accuracy and grouped by 
+# stimuli list (2a vs 2b) as a color and faceted by probability score vs positional
+gold_unseg_plot <- function(df, title) {
+  p <- ggplot(data = df, aes(x = model, y = accuracy, color = stim)) + 
+    # geom_hline(yintercept = mean(baseline_df$min), linetype="dashed") +
+    # geom_hline(yintercept = mean(baseline_df$max), linetype="dashed") +
+    geom_point(alpha = 0.5, position = position_dodge(width = 0.6)) +
+    stat_summary(fun.data = mean_ci, geom = "errorbar", linewidth = 1, 
+                 width = 0.5, position = position_dodge(width = 0.6)) + # mean_ci is calculating a 95% confidence interval. but mean_ci(acc_ag$accuracy) is not 2 sd's away from the mean. maybe it removes outliers? 
+    geom_point(stat = "summary", fun = "mean", size = 4, shape = 'square',
+               position = position_dodge(width = 0.6)) +
+    ylim(0,1) +
+    facet_wrap(~score_type) +
+    ggtitle(title) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5))
+  
+  return(p)
+}
+
+
+# comparison plots with our results
+format_og_acc_to_breiss <- function(df, model_str, StimuliSet_str, score_type_str) {
+  new_df <- df %>%
+    filter(model == model_str) %>%
+    dplyr::mutate(stim = StimuliSet_str, 
+                  score_type = score_type_str)
+  return(new_df)
+}
+
+og_acc_comb <- list(format_og_acc_to_breiss(comb_acc_2a, 'gold seg', '2a', 'probability'),
+                    format_og_acc_to_breiss(comb_acc_2a, 'unseg', '2a', 'probability'),
+                    format_og_acc_to_breiss(comb_acc_2b, 'gold seg', '2b', 'probability'),
+                    format_og_acc_to_breiss(comb_acc_2b, 'unseg', '2b', 'probability'),
+                    format_og_acc_to_breiss(comb_acc_2a_pos, 'gold seg', '2a', 'positional'),
+                    format_og_acc_to_breiss(comb_acc_2a_pos, 'unseg', '2a', 'positional'),
+                    format_og_acc_to_breiss(comb_acc_2b_pos, 'gold seg', '2b', 'positional'),
+                    format_og_acc_to_breiss(comb_acc_2b_pos, 'unseg', '2b', 'positional')) %>%
+  reduce(full_join)
+
+
+# full og results with new plot 
+df_og_full <- list(dplyr::mutate(comb_acc_2a, score_type = 'probability', stim = '2a'),
+           dplyr::mutate(comb_acc_2a_pos, score_type = 'positional', stim = '2a'),
+           dplyr::mutate(comb_acc_2b, score_type = 'probability', stim = '2b'),
+           dplyr::mutate(comb_acc_2b_pos, score_type = 'positional', stim = '2b')) %>%
+  reduce(full_join) 
+
+p_full <- gold_unseg_plot(df_og_full, 'OG data run905')
+side_by_side <- (gold_unseg_plot(comb_acc_breiss, "Breiss data run905") + 
+    gold_unseg_plot(og_acc_comb, "OG data run905"))
+
+ggsave(filename = "../plots/NewAnalysis905.png", plot = p_full, 
+       width = 11, height = 7)
+ggsave(filename = "../plots/SideBySide905.png", plot = side_by_side, 
+       width = 9, height = 5)
 
 
 #### OLD code 
 # # things i've tried to get a baseline model 
-# set.seed(907)
+# set.seed(905)
 # 
 # train(List ~ 0, data=df2a_dibs,
 #       method="glm",
