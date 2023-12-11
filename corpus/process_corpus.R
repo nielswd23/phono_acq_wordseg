@@ -30,6 +30,7 @@ pearl_corpus_raw %>%
   mutate(utterance = str_replace_all(utterance, '(?<=[^ ])(?!( |$))', ' ')) %>%
   to_arpabet() %>%
   mutate(utterance = str_replace_all(utterance, 'AO', 'AA')) %>%
+  distinct() %>%
   write_csv("unseg_final.txt", col_names = FALSE)
 
 to_arpabet <- function(df) {
