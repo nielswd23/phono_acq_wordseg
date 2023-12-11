@@ -82,7 +82,7 @@ to_arpabet <- function(df) {
           'e'='EY',
           '@'='AE',
           'a'='AA',
-          '//^'='AH',
+          '\\^'='AH',
           'c'='AO',
           'o'='OW',
           'u'='UW',
