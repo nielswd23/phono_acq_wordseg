@@ -19,12 +19,12 @@ gold_token <- pearl_corpus_raw %>%
 paste0(unique(unlist(strsplit(gold_token$utterance, ' '))), collapse = " ")
 
 gold_token %>%
-  write_csv('gold_token_final.txt', col_names = FALSE)
+  write_csv('gold_token_final.csv', col_names = FALSE)
   
 # Create gold corpus, typized
   gold_token %>%
     distinct() %>%
-    write_csv('gold_type_final.txt', col_names = FALSE)
+    write_csv('gold_type_final.csv', col_names = FALSE)
   
 # Create unsegmented corpus
 unseg_token <- pearl_corpus_raw %>%
