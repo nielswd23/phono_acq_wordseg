@@ -101,4 +101,14 @@ infant_3 <- read_csv("infant_3_stimuli.csv") %>%
   select(-Unigram, -Bigram) %>%
   write_csv('infant_3_clean.csv')
 
+infant_2a %>%
+  select(Arpabet) %>%
+  write_csv('infant_2a_testing.csv', col_names = FALSE)
 
+infant_2b %>%
+  select(Arpabet) %>%
+  write_csv('infant_2b_testing.csv', col_names = FALSE)
+
+infant_3 %>%
+  select(Arpabet) %>%
+  write_csv('infant_3_testing.csv', col_names = FALSE)
