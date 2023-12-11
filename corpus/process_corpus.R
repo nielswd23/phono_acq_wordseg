@@ -27,12 +27,12 @@ gold_token %>%
     write_csv('gold_type_final.txt', col_names = FALSE)
   
 # Create unsegmented corpus
-useg_token <- pearl_corpus_raw %>%
+unseg_token <- pearl_corpus_raw %>%
   # Add spaces following each non-final, non-space character
   mutate(utterance = str_replace_all(utterance, '(?<=[^ ])(?!( |$))', ' ')) %>%
   to_arpabet() %>%
   mutate(utterance = str_replace_all(utterance, 'AO', 'AA')) %>%
-  write_csv("unseg_token_final.txt", col_names = FALSE)
+  write_csv("unseg_token_final.csv", col_names = FALSE)
 
 unseg_token %>%
   distinct() %>%
