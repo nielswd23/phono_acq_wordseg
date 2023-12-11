@@ -1,7 +1,9 @@
 library(tidyverse)
 setwd("E:/git_repos/phono_acq_wordseg/corpus")
 
-pearl_corpus_raw <- read_csv("PearlCorpusPhonetic.txt", col_names = c("utterance"))
+pearl_corpus_raw <- read_csv(
+  "unprocessed/PearlCorpusPhonetic.txt", col_names = c("utterance")
+)
 
 # Create gold corpus, tokenized
 gold_token <- pearl_corpus_raw %>% 
@@ -25,13 +27,16 @@ gold_token %>%
     write_csv('gold_type_final.txt', col_names = FALSE)
   
 # Create unsegmented corpus
-pearl_corpus_raw %>%
+useg_token <- pearl_corpus_raw %>%
   # Add spaces following each non-final, non-space character
   mutate(utterance = str_replace_all(utterance, '(?<=[^ ])(?!( |$))', ' ')) %>%
   to_arpabet() %>%
   mutate(utterance = str_replace_all(utterance, 'AO', 'AA')) %>%
+  write_csv("unseg_token_final.txt", col_names = FALSE)
+
+unseg_token %>%
   distinct() %>%
-  write_csv("unseg_final.txt", col_names = FALSE)
+  write_csv("unseg_type_final.csv", col_names = FALSE)
 
 to_arpabet <- function(df) {
   df %>%
